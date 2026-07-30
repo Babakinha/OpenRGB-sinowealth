@@ -334,45 +334,49 @@ DetectedControllers DetectGMOW_Dongle(hid_device_info* info, const std::string& 
     return(detected_controllers);
 }
 
-// static void DetectSinowealthKeyboard16(hid_device_info* info, const std::string& name)
-// {
-//     unsigned char command[6] = {0x05, 0x83, 0x00, 0x00, 0x00, 0x00};
-//     expected_reports reports{expected_report(0x06, 1032, command, sizeof(command))};
-//     if(!DetectUsages(info, name, 3, reports))
-//     {
-//         return;
-//     }
-//     hid_device *dev = reports.at(0).device;
-//     hid_device *dev_cmd = reports.at(0).cmd_device;
-//     if(dev && dev_cmd)
-//     {
-//         SinowealthKeyboard16Controller*     controller     = new SinowealthKeyboard16Controller(dev_cmd, dev, info->path, name);
-//         RGBController_SinowealthKeyboard16* rgb_controller = new RGBController_SinowealthKeyboard16(controller);
-//
-//         DetectionManager::get()->RegisterRGBController(rgb_controller);
-//     }
-// }
+static DetectedControllers DetectSinowealthKeyboard16(hid_device_info* info, const std::string& name)
+{
+    DetectedControllers detected_controllers;
+    unsigned char command[6] = {0x05, 0x83, 0x00, 0x00, 0x00, 0x00};
+    expected_reports reports{expected_report(0x06, 1032, command, sizeof(command))};
 
-// static void DetectSinowealthKeyboard(hid_device_info* info, const std::string& name)
-// {
-//     unsigned char command[6] = {0x05, 0x83, 0xB6, 0x00, 0x00, 0x00};
-//     expected_reports reports{expected_report(0x06, 1032, command, sizeof(command))};
-//     if(!DetectUsages(info, name, 3, reports))
-//     {
-//         return;
-//     }
-//
-//     hid_device *dev      = reports.at(0).device;
-//     hid_device *dev_cmd  = reports.at(0).cmd_device;
-//
-//     if(dev && dev_cmd)
-//     {
-//         SinowealthKeyboardController*     controller     = new SinowealthKeyboardController(dev_cmd, dev, info->path, name);
-//         RGBController_SinowealthKeyboard* rgb_controller = new RGBController_SinowealthKeyboard(controller);
-//
-//         DetectionManager::get()->RegisterRGBController(rgb_controller);
-//     }
-// }
+    if(DetectUsages(info, name, 3, reports))
+    {
+        hid_device *dev = reports.at(0).device;
+        hid_device *dev_cmd = reports.at(0).cmd_device;
+
+        if(dev && dev_cmd)
+        {
+            SinowealthKeyboard16Controller*       controller       = new SinowealthKeyboard16Controller(dev_cmd, dev, info->path, name);
+            RGBController_SinowealthKeyboard16* rgb_controller = new RGBController_SinowealthKeyboard16(controller);
+
+            detected_controllers.push_back(rgb_controller);
+        }
+    }
+    return detected_controllers;
+}
+
+static DetectedControllers DetectSinowealthKeyboard(hid_device_info* info, const std::string& name)
+{
+    DetectedControllers detected_controllers;
+    unsigned char command[6] = {0x05, 0x83, 0xB6, 0x00, 0x00, 0x00};
+    expected_reports reports{expected_report(0x06, 1032, command, sizeof(command))};
+
+    if(DetectUsages(info, name, 3, reports))
+    {
+        hid_device *dev      = reports.at(0).device;
+        hid_device *dev_cmd  = reports.at(0).cmd_device;
+
+        if(dev && dev_cmd)
+        {
+            SinowealthKeyboardController*       controller       = new SinowealthKeyboardController(dev_cmd, dev, info->path, name);
+            RGBController_SinowealthKeyboard* rgb_controller = new RGBController_SinowealthKeyboard(controller);
+
+            detected_controllers.push_back(rgb_controller);
+        }
+    }
+    return detected_controllers;
+}
 
 DetectedControllers DetectSinowealthGenesisKeyboard(hid_device_info* info, const std::string& name)
 {
@@ -429,5 +433,5 @@ REGISTER_HID_DETECTOR_IPU("Genesis Thor 300",               DetectSinowealthGene
 REGISTER_HID_DETECTOR_IPU("Sinowealth Keyboard",            DetectSinowealthKeyboard10c,        SINOWEALTH_VID, RGB_KEYBOARD_010CPID,               1,  0xFF00, 1       );
 
 // Sinowealth keyboards are disabled due to VID/PID pairs being reused from Redragon keyboards, which ended up in bricking the latter
-//REGISTER_HID_DETECTOR_P("FL ESPORTS F11",                   DetectSinowealthKeyboard,   SINOWEALTH_VID, Fl_Esports_F11_PID,                             0xFF00          );
+REGISTER_HID_DETECTOR_P("FL ESPORTS F11",                   DetectSinowealthKeyboard,           SINOWEALTH_VID, Fl_Esports_F11_PID,                     0xFF00          );
 //REGISTER_HID_DETECTOR_P("Sinowealth Keyboard",              DetectSinowealthKeyboard16, SINOWEALTH_VID, RGB_KEYBOARD_0016PID,                           0xFF00          );
